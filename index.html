@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>コード入力画面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+        }
+        input {
+            font-size: 24px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        #result {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #typedText {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>タイピング練習サイト - ひらがな限定</h1>
+        <p id="text">表示されている文字を入力してください</p>
+        <input type="text" id="inputText" placeholder="文字を入力" autocomplete="off" autofocus />
+        <div id="typedText"></div>
+        <div id="result"></div>
+        <canvas id="codeCanvas" width="400" height="100"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script> <!-- FileSaver.jsの読み込み -->
+
+    <script>
+        // ランダムなコードを生成する関数
+        function generateRandomCode(length) {
+            const characters = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ';
+            let code = ''
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                code += characters[randomIndex];
+            }
+            return code;
+        }
+
+        const correctCode = generateRandomCode(20); // 20文字のランダム文字
+        const textElement = document.getElementById("text");
+        const inputElement = document.getElementById("inputText");
+        const resultElement = document.getElementById("result");
+        const typedTextElement = document.getElementById("typedText");
+        textElement.textContent = `文字: ${correctCode} を入力してください。正確な文字を入力してエンターすると、次の文字が表示されます`;  // ランダムコードを表示
+
+        let startTime = null;
+        let isTyping = false;
+
+        inputElement.addEventListener("input", function() {
+            const typedText = inputElement.value;
+
+
+            if (!isTyping) {
+                startTime = Date.now(); // タイピング開始時刻
+                isTyping = true;
+            }
+
+            if (typedText === correctCode) {
+                const endTime = Date.now(); // タイピング終了時刻
+                const timeTaken = (endTime - startTime) / 1000; // 経過時間（秒）
+                const wordsPerMinute = Math.round((typedText.length / 5) / (timeTaken / 60));
+                resultElement.textContent = ''; // 部分一致なら結果は表示しない
+            } else {
+                resultElement.textContent = '文字が間違っています';
+            }
+        });
+    </script>
+        <script>
+            // 右クリックを無効化
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+    
+            // キーボードのショートカット（Ctrl+C、Ctrl+X、Ctrl+Vなど）を無効化
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && (e.key === 'c' || e.key === 'x' || e.key === 'v')) {
+                    e.preventDefault();
+                }
+            });
+    
+            // ドラッグを無効化
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+            });
+    
+            // クリックしてのテキスト選択を無効化
+            document.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+            });
+        </script>
+    </script>
+        <script>
+inputElement.addEventListener("input", function() {
+    const typedText = inputElement.value;
+
+
+    if (!isTyping) {
+        startTime = Date.now(); // タイピング開始時刻
+        isTyping = true;
+    }
+
+    if (correctCode.startsWith(typedText)) {
+        resultElement.textContent = ''; // 部分一致なら結果は表示しない
+    } else {
+        resultElement.textContent = '入力が間違ってるかもしれないよ！';
+    }
+});
+
+inputElement.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") { // エンターキーが押された場合
+        const typedText = inputElement.value;
+
+        if (typedText === correctCode) {
+            window.location.reload(); // サイトをリロード（再描画）
+        } else {
+            resultElement.textContent = '入力が間違ってるかもしれないよ！';
+        }
+    }
+});
+    </script>
+</body>
+</html>
